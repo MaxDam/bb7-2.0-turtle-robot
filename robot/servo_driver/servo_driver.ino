@@ -1,6 +1,8 @@
 //https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library
 //https://robojax.com/learn/arduino/?vid=robojax_PCA9685-V4
 //https://arduinojson.org/v6/doc/installation/
+//https://github.com/bblanchon/ArduinoJson
+//https://github.com/knolleary/pubsubclient
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
