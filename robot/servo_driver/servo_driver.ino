@@ -14,6 +14,7 @@
 //https://robojax.com/learn/arduino/?vid=robojax_PCA9685-V4
 //https://www.pubnub.com/blog/pubsub-nodemcu-32s-esp32-mqtt-pubnub-arduino-sdk/
 //https://arduinojson.org/v6/example/string/
+//https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
 
 #include <WiFi.h>
 #include <PubSubClient.h>
@@ -70,7 +71,8 @@ void setup_wifi() {
       while(1) delay(100);
   }
  
-  Serial.println("Connected to the WiFi network");
+  Serial.print("Connected to the WiFi network: ");
+  Serial.println(ssid);
 }
 
 //setup mqtt
@@ -89,7 +91,7 @@ void setup_adafruit_board() {
 //reconnect to mqtt
 boolean reconnect() {
   if (client.connect(client_id)) {
-    client.subscribe(topic_output); // Subscribe to channel.
+    client.subscribe(topic_input); // Subscribe to channel.
   }
   return client.connected();
 }
@@ -100,6 +102,10 @@ void moveJoint(int joint, int degree) {
   if(joint==NECK || joint==LEFT_FRONT_ARM || joint==RIGHT_BACK_ARM || joint==RIGHT_FRONT_SHOULDER || joint==RIGHT_BACK_SHOULDER){
     sign = -1;
   }
+  Serial.print("Move Joint ");
+  Serial.print(joint);
+  Serial.print(" ");
+  Serial.println(degree);
   int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
   board.setPWM(joint, 0, pulse);
 }
@@ -109,10 +115,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
+  
   String payload_buff;
   for (int i=0;i<length;i++) {
     payload_buff = payload_buff+String((char)payload[i]);
   }
+  Serial.println(payload_buff);
   
   //test servos lite
   if(payload_buff == "testservo") {
@@ -232,7 +240,7 @@ void loop() {
   } 
   else { // Connected.
     client.loop();
-    client.publish(topic_output, "Hello world!"); // Publish message.
+    //client.publish(topic_output, "Hello world!"); // Publish message.
     delay(1000);
   }
 }
