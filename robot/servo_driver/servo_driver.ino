@@ -27,20 +27,22 @@
 //servo range
 #define DEGREEMIN -90 //'minimum' degree
 #define DEGREEMAX 90  //'maximum' degree
-#define SERVOMIN  150 // 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  600 // 'maximum' pulse length count (out of 4096)
+//#define SERVOMIN  150 // 'minimum' pulse length count (out of 4096)
+//#define SERVOMAX  600 // 'maximum' pulse length count (out of 4096)
+#define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 
 //body joint
-#define HEAD 				 0
-#define NECK 				 1
-#define RIGHT_FRONT_SHOULDER 2
-#define RIGHT_FRONT_ARM		 3
-#define LEFT_FRONT_SHOULDER	 4
-#define LEFT_FRONT_ARM	     5
-#define RIGHT_BACK_SHOULDER	 6
-#define RIGHT_BACK_ARM 		 7
-#define LEFT_BACK_SHOULDER 	 8
-#define LEFT_BACK_ARM	     9
+#define HEAD 				          0
+#define NECK 				          1
+#define RIGHT_FRONT_SHOULDER  2
+#define RIGHT_FRONT_ARM		    3
+#define LEFT_FRONT_SHOULDER	  4
+#define LEFT_FRONT_ARM	      5
+#define RIGHT_BACK_SHOULDER	  6
+#define RIGHT_BACK_ARM 		    7
+#define LEFT_BACK_SHOULDER 	  8
+#define LEFT_BACK_ARM	        9
 
 //wifi and mqtt configuration
 const char* ssid     = "Vodafone-C01960075";
@@ -98,16 +100,81 @@ boolean reconnect() {
 
 //move body joint (servo motor)
 void moveJoint(int joint, int degree) {
+
+  //calibrate
+  degree = calibrateDegree(joint, degree);
+
+  //debug
+  if(false) {
+    Serial.print("Move Joint ");
+    Serial.print(joint);
+    Serial.print(" ");
+    Serial.println(degree);
+  }
+
+  //move servo
+  int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
+  board.setPWM(joint, 0, pulse);
+}
+
+//calibrate degree
+int calibrateDegree(int joint, int degree) {
   int sign = 1;
   if(joint==NECK || joint==LEFT_FRONT_ARM || joint==RIGHT_BACK_ARM || joint==RIGHT_FRONT_SHOULDER || joint==RIGHT_BACK_SHOULDER){
     sign = -1;
+  }  
+  return degree*sign;
+  
+  if(joint==HEAD){
+    int sign = -1;
+    int center = -15;
+    int max_top = 55;
+    int max_bottom = -90;
+    if(degree >= 0) degree = degree / 90 * max_top * sign;
+    if(degree < 0)  degree = degree / -90 * max_bottom * sign;
   }
-  //Serial.print("Move Joint ");
-  //Serial.print(joint);
-  //Serial.print(" ");
-  //Serial.println(degree);
-  int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
-  board.setPWM(joint, 0, pulse);
+  if(joint==NECK){
+    int sign = -1;
+    int center = -20;
+    int max_right = 50;
+    int max_left = -100;
+    if(degree >= 0) degree = degree / 90 * max_right * sign;
+    if(degree < 0)  degree = degree / -90 * max_left * sign;
+  }
+  if(joint==RIGHT_FRONT_SHOULDER){
+    int sign = -1;
+    int center = -20;
+    int max_right = -65;
+    int max_left = 20;
+    if(degree >= 0) degree = degree / 90 * max_right * sign;
+    if(degree < 0)  degree = degree / -90 * max_left * sign;
+  }
+  if(joint==RIGHT_FRONT_ARM){
+    int sign = 1;
+    int center = 42;
+    int max_extension = 100;
+    int max_crouch = -15;
+    if(degree >= 0) degree = degree / 90 * max_extension * sign;
+    if(degree < 0)  degree = degree / -90 * max_crouch * sign;
+  }
+  if(joint==LEFT_FRONT_SHOULDER){
+    //
+  }
+  if(joint==LEFT_FRONT_ARM){
+    //
+  }
+  if(joint==RIGHT_BACK_SHOULDER){
+    //
+  }
+  if(joint==NERIGHT_BACK_ARMCK){
+    //
+  }
+  if(joint==LEFT_BACK_SHOULDER){
+    //
+  }
+  if(joint==LEFT_BACK_ARM){
+    //
+  }
 }
 
 //mqtt message callback
@@ -170,11 +237,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
     digitalWrite(BUILTIN_LED, HIGH);
 	  return;
   }
+
+  //move joint
+  int joint = getValue(payload_buff, ':', 0).toInt();
+  int degree = getValue(payload_buff, ':', 1).toInt();
+  moveJoint(joint, degree);
+  return;
   
   //get json payload
   DynamicJsonDocument doc(1024);
-  DeserializationError error = deserializeJson(doc, payload_buff);
+  deserializeJson(doc, payload_buff);
   JsonObject root = doc.to<JsonObject>();
+
+  String output;
+  serializeJson(root, output);
+  Serial.print("json: ");
+  Serial.println(output);
   
   //translate json to servo moves
   if(root.containsKey("HEAD")) {
@@ -230,6 +308,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
   } else {
     Serial.println("Error sending message");
   }*/
+}
+
+String getValue(String data, char separator, int index) {
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+        found++;
+        strIndex[0] = strIndex[1]+1;
+        strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
 void setup() {
