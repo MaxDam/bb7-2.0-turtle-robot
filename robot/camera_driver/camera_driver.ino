@@ -1,3 +1,10 @@
+//IDE ESP32
+//https://randomnerdtutorials.com/program-upload-code-esp32-cam/
+//File > Preferences > Additional Board Manager URLs > https://dl.espressif.com/dl/package_esp32_index.json
+//Board > Boards Manager > ESP32
+//Tools > Board > Board: "AI-Thinker ESP32-CAM" > ESP32 Arduino > AI-Thinker ESP32-CAM
+//Tools > Port > Selezionare porta com
+
 /****************************************************************************************************************************************************
  *  TITLE: HOW TO BUILD A $9 RSTP VIDEO STREAMER: Using The ESP-32 CAM Board || Arduino IDE - DIY #14
  *  DESCRIPTION: This sketch creates a video streamer than uses RTSP. You can configure it to either connect to an existing WiFi network or to create
