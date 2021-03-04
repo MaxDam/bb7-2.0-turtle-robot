@@ -1,3 +1,10 @@
+//IDE ESP8266
+//https://www.antoniovasco.it/2018/08/11/configurare-wemos-d1-mini-con-arduino-ide/
+//File > Preferences > Additional Board Manager URLs > http://arduino.esp8266.com/stable/package_esp8266com_index.json
+//Board > Boards Manager > ESP8266
+//Tools > Board: "LOLIN(WEMOS) D1 mini Lite" > LOLIN(WEMOS) D1 mini Lite
+//Tools > Port > Selezionare porta com
+
 //MAG3110 3-axis Sensor Module Electronic Compass Board
 //https://www.esp8266learning.com/wemos-mag3110-magnetometer.php
 

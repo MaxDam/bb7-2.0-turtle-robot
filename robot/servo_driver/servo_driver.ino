@@ -1,3 +1,10 @@
+//IDE ESP32
+//https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
+//File > Preferences > Additional Board Manager URLs > https://dl.espressif.com/dl/package_esp32_index.json
+//Board > Boards Manager > ESP32
+//Tools > Board: "DOIT ESP32 DEVKIT V1" > DOIT ESP32 DEVKIT V1
+//Tools > Port > Selezionare porta com
+
 //https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library
 //https://robojax.com/learn/arduino/?vid=robojax_PCA9685-V4
 //https://arduinojson.org/v6/doc/installation/
