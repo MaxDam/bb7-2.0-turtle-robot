@@ -184,5 +184,5 @@ void loop()
   client.loop();
   
   send_compass_values();
-  delay(5);
+  delay(1000);
 }

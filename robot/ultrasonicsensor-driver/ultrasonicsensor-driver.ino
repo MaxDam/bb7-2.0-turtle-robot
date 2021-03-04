@@ -5,13 +5,15 @@
 //Tools > Board: "LOLIN(WEMOS) D1 mini Lite" > LOLIN(WEMOS) D1 mini Lite
 //Tools > Port > Selezionare porta com
 
-//L3G4200D three-axis gyroscope
-//http://www.esp8266learning.com/l3g4200d-three-axis-gyroscope-and-esp8266-example.php
+//HC-SR04 ultrasonic sensor
+//http://www.esp8266learning.com/wemos-mini-hc-sr04-ultrasonic-sensor.php
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Wire.h>
-#include <L3G4200D.h>
+ 
+#define echoPin D7 // Echo Pin
+#define trigPin D6 // Trigger Pin
  
 //configuration
 const char* ssid     = "Vodafone-C01960075";
@@ -22,7 +24,8 @@ const char* topic_output = "myhome/mx/cserver";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-L3G4200D gyroscope;
+
+long duration, distance; // Duration used to calculate distance
 
 #define MSG_BUFFER_SIZE  (50)
 char msg[MSG_BUFFER_SIZE];
@@ -103,110 +106,30 @@ void reconnect() {
   }
 }
 
-//setup gyroscope
-void setupGyro() 
+//setup sensor
+void setupUltrasonicSensor() 
 {
-  Serial.begin(9600);
-  Serial.println("Initialize L3G4200D");
- 
-  while(!gyroscope.begin(L3G4200D_SCALE_2000DPS, L3G4200D_DATARATE_400HZ_50))
-  {
-    Serial.println("Could not find a valid L3G4200D sensor, check wiring!");
-    delay(500);
-  }
- 
-  // Check selected scale
-  Serial.print("Selected scale: ");
- 
-  switch(gyroscope.getScale())
-  {
-    case L3G4200D_SCALE_250DPS:
-      Serial.println("250 dps");
-      break;
-    case L3G4200D_SCALE_500DPS:
-      Serial.println("500 dps");
-      break;
-    case L3G4200D_SCALE_2000DPS:
-      Serial.println("2000 dps");
-      break;
-    default:
-      Serial.println("unknown");
-      break;
-  }
- 
-  // Check Output Data Rate and Bandwidth
-  Serial.print("Output Data Rate: ");
- 
-  switch(gyroscope.getOdrBw())
-  {
-    case L3G4200D_DATARATE_800HZ_110:
-      Serial.println("800HZ, Cut-off 110");
-      break;
-    case L3G4200D_DATARATE_800HZ_50:
-      Serial.println("800HZ, Cut-off 50");
-      break;
-    case L3G4200D_DATARATE_800HZ_35:
-      Serial.println("800HZ, Cut-off 35");
-      break;
-    case L3G4200D_DATARATE_800HZ_30:
-      Serial.println("800HZ, Cut-off 30");
-      break;
-    case L3G4200D_DATARATE_400HZ_110:
-      Serial.println("400HZ, Cut-off 110");
-      break;
-    case L3G4200D_DATARATE_400HZ_50:
-      Serial.println("400HZ, Cut-off 50");
-      break;
-    case L3G4200D_DATARATE_400HZ_25:
-      Serial.println("400HZ, Cut-off 25");
-      break;
-    case L3G4200D_DATARATE_400HZ_20:
-      Serial.println("400HZ, Cut-off 20");
-      break;
-    case L3G4200D_DATARATE_200HZ_70:
-      Serial.println("200HZ, Cut-off 70");
-      break;
-    case L3G4200D_DATARATE_200HZ_50:
-      Serial.println("200HZ, Cut-off 50");
-      break;
-    case L3G4200D_DATARATE_200HZ_25:
-      Serial.println("200HZ, Cut-off 25");
-      break;
-    case L3G4200D_DATARATE_200HZ_12_5:
-      Serial.println("200HZ, Cut-off 12.5");
-      break;
-    case L3G4200D_DATARATE_100HZ_25:
-      Serial.println("100HZ, Cut-off 25");
-      break;
-    case L3G4200D_DATARATE_100HZ_12_5:
-      Serial.println("100HZ, Cut-off 12.5");
-      break;
-    default:
-      Serial.println("unknown");
-      break;
-  }
- 
-  // Calibrate gyroscope. The calibration must be at rest.
-  // If you don't want calibrate, comment this line.
-  gyroscope.calibrate();
- 
-  // Set threshold sensivty. Default 3.
-  // If you don't want use threshold, comment this line or set 0.
-  gyroscope.setThreshold(3);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 }
 
- 
-void send_gyro_values(void)
+//send distance value
+void send_distance_value(void)
 {
-  // Read normalized values
-  Vector raw = gyroscope.readRaw();
- 
-  // Read normalized values in deg/sec
-  Vector norm = gyroscope.readNormalize();
+  /* The following trigPin/echoPin cycle is used to determine the
+  distance of the nearest object by bouncing soundwaves off of it. */
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  //Calculate the distance (in cm) based on the speed of sound.
+  distance = duration/58.2;
+  Serial.println(distance);
  
   //acquire info and send message
-  const char* value = "Xraw =" + raw.XAxis + ", Yraw = " + norm.YAxis + ", ZNorm = " +norm.ZAxis;
-  snprintf(msg, MSG_BUFFER_SIZE, value);
+  snprintf(msg, MSG_BUFFER_SIZE, distance);
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(topic_output, msg);
@@ -216,7 +139,8 @@ void setup()
 {
   Wire.begin();          // join i2c bus (address optional for master)
   Serial.begin(115200);  // start serial for output
-  setupGyro(); 			 //setup Gyroscope
+  
+  setupUltrasonicSensor();
 }
  
 void loop()
@@ -226,7 +150,6 @@ void loop()
   }
   client.loop();
   
-  send_gyro_values();
+  send_distance_value();
   delay(1000);
 }
-
