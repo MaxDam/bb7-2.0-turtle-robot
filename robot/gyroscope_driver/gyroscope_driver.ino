@@ -11,6 +11,7 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Wire.h>
+#include <L3G4200D.h>
  
 #define MAG_ADDR  0x0E //7-bit address for the MAG3110, doesn't change
  
@@ -23,6 +24,7 @@ const char* topic_output = "myhome/mx/cserver";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+L3G4200D gyroscope;
 
 #define MSG_BUFFER_SIZE  (50)
 char msg[MSG_BUFFER_SIZE];
@@ -103,77 +105,119 @@ void reconnect() {
   }
 }
 
-//setup compass
-void setupCompass(void)
+void setupGyro() 
 {
-  Wire.beginTransmission(MAG_ADDR); // transmit to device 0x0E
-  Wire.write(0x11);             // cntrl register2
-  Wire.write(0x80);             // write 0x80, enable auto resets
-  Wire.endTransmission();       // stop transmitting
-  delay(15); 
-  Wire.beginTransmission(MAG_ADDR); // transmit to device 0x0E
-  Wire.write(0x10);             // cntrl register1
-  Wire.write(1);                // write 0x01, active mode
-  Wire.endTransmission();       // stop transmitting
-}
+  Serial.begin(9600);
+  Serial.println("Initialize L3G4200D");
  
-int mag_read_register(int reg)
-{
-  int reg_val;
- 
-  Wire.beginTransmission(MAG_ADDR); // transmit to device 0x0E
-  Wire.write(reg);              // x MSB reg
-  Wire.endTransmission();       // stop transmitting
-  delayMicroseconds(2); //needs at least 1.3us free time between start and stop
- 
-  Wire.requestFrom(MAG_ADDR, 1); // request 1 byte
-  while(Wire.available())    // slave may write less than requested
-  { 
-    reg_val = Wire.read(); // read the byte
+  while(!gyroscope.begin(L3G4200D_SCALE_2000DPS, L3G4200D_DATARATE_400HZ_50))
+  {
+    Serial.println("Could not find a valid L3G4200D sensor, check wiring!");
+    delay(500);
   }
  
-  return reg_val;
-}
+  // Check selected scale
+  Serial.print("Selected scale: ");
  
-int mag_read_value(int msb_reg, int lsb_reg)
-{
-  int val_low, val_high;  //define the MSB and LSB
-  val_high = mag_read_register(msb_reg);
-  delayMicroseconds(2); //needs at least 1.3us free time between start and stop
-  val_low = mag_read_register(lsb_reg);
-  int out = (val_low|(val_high << 8)); //concatenate the MSB and LSB
-  return out;
-}
+  switch(gyroscope.getScale())
+  {
+    case L3G4200D_SCALE_250DPS:
+      Serial.println("250 dps");
+      break;
+    case L3G4200D_SCALE_500DPS:
+      Serial.println("500 dps");
+      break;
+    case L3G4200D_SCALE_2000DPS:
+      Serial.println("2000 dps");
+      break;
+    default:
+      Serial.println("unknown");
+      break;
+  }
  
-int read_x(void)
-{
-  return mag_read_value(0x01, 0x02);
-}
+  // Check Output Data Rate and Bandwidth
+  Serial.print("Output Data Rate: ");
  
-int read_y(void)
-{
-  return mag_read_value(0x03, 0x04);
-}
+  switch(gyroscope.getOdrBw())
+  {
+    case L3G4200D_DATARATE_800HZ_110:
+      Serial.println("800HZ, Cut-off 110");
+      break;
+    case L3G4200D_DATARATE_800HZ_50:
+      Serial.println("800HZ, Cut-off 50");
+      break;
+    case L3G4200D_DATARATE_800HZ_35:
+      Serial.println("800HZ, Cut-off 35");
+      break;
+    case L3G4200D_DATARATE_800HZ_30:
+      Serial.println("800HZ, Cut-off 30");
+      break;
+    case L3G4200D_DATARATE_400HZ_110:
+      Serial.println("400HZ, Cut-off 110");
+      break;
+    case L3G4200D_DATARATE_400HZ_50:
+      Serial.println("400HZ, Cut-off 50");
+      break;
+    case L3G4200D_DATARATE_400HZ_25:
+      Serial.println("400HZ, Cut-off 25");
+      break;
+    case L3G4200D_DATARATE_400HZ_20:
+      Serial.println("400HZ, Cut-off 20");
+      break;
+    case L3G4200D_DATARATE_200HZ_70:
+      Serial.println("200HZ, Cut-off 70");
+      break;
+    case L3G4200D_DATARATE_200HZ_50:
+      Serial.println("200HZ, Cut-off 50");
+      break;
+    case L3G4200D_DATARATE_200HZ_25:
+      Serial.println("200HZ, Cut-off 25");
+      break;
+    case L3G4200D_DATARATE_200HZ_12_5:
+      Serial.println("200HZ, Cut-off 12.5");
+      break;
+    case L3G4200D_DATARATE_100HZ_25:
+      Serial.println("100HZ, Cut-off 25");
+      break;
+    case L3G4200D_DATARATE_100HZ_12_5:
+      Serial.println("100HZ, Cut-off 12.5");
+      break;
+    default:
+      Serial.println("unknown");
+      break;
+  }
  
-int read_z(void)
-{
-  return mag_read_value(0x05, 0x06);
+  // Calibrate gyroscope. The calibration must be at rest.
+  // If you don't want calibrate, comment this line.
+  gyroscope.calibrate();
+ 
+  // Set threshold sensivty. Default 3.
+  // If you don't want use threshold, comment this line or set 0.
+  gyroscope.setThreshold(3);
 }
 
-void send_compass_values(void)
+ 
+void send_gyro_values(void)
 {
-  const char* value = "x=" + read_x() + ",y=" + read_y() + ",z=" +read_z();
+  // Read normalized values
+  Vector raw = gyroscope.readRaw();
+ 
+  // Read normalized values in deg/sec
+  Vector norm = gyroscope.readNormalize();
+ 
+  //acquire info and send message
+  const char* value = "Xraw =" + raw.XAxis + ", Yraw = " + norm.YAxis + ", ZNorm = " +norm.ZAxis;
   snprintf(msg, MSG_BUFFER_SIZE, value);
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(topic_output, msg);
 }
- 
+
 void setup()
 {
   Wire.begin();          // join i2c bus (address optional for master)
   Serial.begin(115200);  // start serial for output
-  setupCompass();        // turn the MAG3110 on
+  setupGyro(); 			 //setup Gyroscope
 }
  
 void loop()
@@ -183,6 +227,7 @@ void loop()
   }
   client.loop();
   
-  send_compass_values();
+  send_gyro_values();
   delay(5);
 }
+
