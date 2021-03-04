@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import sys
 
 MQTT_BROKER = "test.mosquitto.org"
-MQTT_SEND = "myhome/mx/cserver"
+MQTT_SEND = "bb7-2.0/servo-driver/in"
 
 client = mqtt.Client()
 

@@ -46,8 +46,8 @@ const char* ssid     = "Vodafone-C01960075";
 const char* password = "tgYsZkgHA4xhJLGy";
 const char* mqtt_server = "test.mosquitto.org";
 const int mqtt_port = 1883;
-const char* topic_input = "myhome/mx/cserver";
-const char* topic_output = "myhome/mx/cserver";
+const char* topic_input = "bb7-2.0/servo-driver/in";
+const char* topic_output = "bb7-2.0/servo-driver/out";
 const char* client_id = "bb7-2.0/servo-driver/123456";
 
 //mqtt vars
