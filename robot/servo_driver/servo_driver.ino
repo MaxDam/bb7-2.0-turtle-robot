@@ -91,13 +91,30 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println();
   
-  //test servos
+  //test servos lite
   char json[] = (char)payload[0];
   if((char)payload[0] == 'testservo') {
-	for(int angle=0; angle<181; angle +=10){
-		for(int i=0; i<10; i++){      
-            moveJoint(i, angle);
-        }
+	for(int i=0; i<10; i++){  
+		moveJoint(i, 0);  
+		delay(5000);		
+		moveJoint(i, -10);  
+		delay(5000);	
+		moveJoint(i, 0);  
+		delay(5000);	
+		moveJoint(i, +10);  
+		delay(5000);	
+	}
+	return;
+  }
+  
+  //test servos full
+  char json[] = (char)payload[0];
+  if((char)payload[0] == 'testservofull') {
+	for(int i=0; i<10; i++){      
+		for(int angle=-90; angle<=90; angle+=10){
+			moveJoint(i, angle);
+			delay(5000);
+		}
     }
 	return;
   }
