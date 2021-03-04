@@ -6,7 +6,7 @@
 //Tools > Port > Selezionare porta com
 
 //MAG3110 3-axis Sensor Module Electronic Compass Board
-//https://www.esp8266learning.com/wemos-mag3110-magnetometer.php
+//http://www.esp8266learning.com/l3g4200d-three-axis-gyroscope-and-esp8266-example.php
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
