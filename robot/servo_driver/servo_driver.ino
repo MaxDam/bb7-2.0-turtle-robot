@@ -102,10 +102,10 @@ void moveJoint(int joint, int degree) {
   if(joint==NECK || joint==LEFT_FRONT_ARM || joint==RIGHT_BACK_ARM || joint==RIGHT_FRONT_SHOULDER || joint==RIGHT_BACK_SHOULDER){
     sign = -1;
   }
-  Serial.print("Move Joint ");
-  Serial.print(joint);
-  Serial.print(" ");
-  Serial.println(degree);
+  //Serial.print("Move Joint ");
+  //Serial.print(joint);
+  //Serial.print(" ");
+  //Serial.println(degree);
   int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
   board.setPWM(joint, 0, pulse);
 }
@@ -121,19 +121,32 @@ void callback(char* topic, byte* payload, unsigned int length) {
     payload_buff = payload_buff+String((char)payload[i]);
   }
   Serial.println(payload_buff);
+
+  //relax servos lite
+  if(payload_buff == "relax") {
+    for(int i=0; i<10; i++){  
+      moveJoint(i, 0);  
+    }
+    return;
+  }
   
   //test servos lite
   if(payload_buff == "testservo") {
+    for(int i=0; i<10; i++){  
+      moveJoint(i, 0);  
+    }
   	for(int i=0; i<10; i++){  
   		moveJoint(i, 0);  
-  		delay(5000);		
-  		moveJoint(i, -10);  
-  		delay(5000);	
+  		delay(1000);		
+  		moveJoint(i, -20);  
+  		delay(1000);	
   		moveJoint(i, 0);  
-  		delay(5000);	
-  		moveJoint(i, +10);  
-  		delay(5000);	
-  	}
+  		delay(1000);	
+  		moveJoint(i, +20);  
+  		delay(1000);	
+  	  moveJoint(i, 0);  
+      delay(1000);  
+    }
   	return;
   }
   
@@ -142,7 +155,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   	for(int i=0; i<10; i++){      
   		for(int angle=-90; angle<=90; angle+=10){
   			moveJoint(i, angle);
-  			delay(5000);
+  			delay(1000);
   		}
     }
   	return;
