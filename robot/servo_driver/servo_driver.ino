@@ -101,80 +101,124 @@ boolean reconnect() {
 //move body joint (servo motor)
 void moveJoint(int joint, int degree) {
 
-  //calibrate
-  degree = calibrateDegree(joint, degree);
-
-  //debug
-  if(false) {
-    Serial.print("Move Joint ");
-    Serial.print(joint);
-    Serial.print(" ");
-    Serial.println(degree);
-  }
-
-  //move servo
-  int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
-  board.setPWM(joint, 0, pulse);
-}
-
-//calibrate degree
-int calibrateDegree(int joint, int degree) {
-  int sign = 1;
+  /*int sign = 1;
   if(joint==NECK || joint==LEFT_FRONT_ARM || joint==RIGHT_BACK_ARM || joint==RIGHT_FRONT_SHOULDER || joint==RIGHT_BACK_SHOULDER){
     sign = -1;
   }  
-  return degree*sign;
+  return degree*sign;*/
+
+  //degree limit
+  if(degree > 90) degree = 90;
+  if(degree < -90) degree = -90;
+
+  int pulse = 0;
   
   if(joint==HEAD){
-    int sign = -1;
+    /*int sign = -1;
     int center = -15;
     int max_top = 55;
     int max_bottom = -90;
     if(degree >= 0) degree = degree / 90 * max_top * sign;
-    if(degree < 0)  degree = degree / -90 * max_bottom * sign;
+    if(degree < 0)  degree = degree / -90 * max_bottom * sign;*/
+
+    int servoMin = 87;
+    int servoMax = 450;
+    int sign = -1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==NECK){
-    int sign = -1;
+    /*int sign = -1;
     int center = -20;
     int max_right = 50;
     int max_left = -100;
     if(degree >= 0) degree = degree / 90 * max_right * sign;
-    if(degree < 0)  degree = degree / -90 * max_left * sign;
+    if(degree < 0)  degree = degree / -90 * max_left * sign;*/
+    
+    int servoMin = 100;
+    int servoMax = 475;
+    int sign = -1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_FRONT_SHOULDER){
-    int sign = -1;
+    /*int sign = -1;
     int center = -20;
     int max_right = -65;
     int max_left = 20;
     if(degree >= 0) degree = degree / 90 * max_right * sign;
-    if(degree < 0)  degree = degree / -90 * max_left * sign;
+    if(degree < 0)  degree = degree / -90 * max_left * sign;*/
+     
+    int servoMin = 175;
+    int servoMax = 388;
+    int sign = -1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_FRONT_ARM){
-    int sign = 1;
+    /*int sign = 1;
     int center = 42;
     int max_extension = 100;
     int max_crouch = -15;
     if(degree >= 0) degree = degree / 90 * max_extension * sign;
-    if(degree < 0)  degree = degree / -90 * max_crouch * sign;
+    if(degree < 0)  degree = degree / -90 * max_crouch * sign;*/
+      
+    int servoMin = 188;
+    int servoMax = 475;
+    int sign = 1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_FRONT_SHOULDER){
-    //
+    int servoMin = 200;
+    int servoMax = 388;
+    int sign = 1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_FRONT_ARM){
-    //
+    int servoMin = 100;
+    int servoMax = 370;
+    int sign = -1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_BACK_SHOULDER){
-    //
+    //TODO da calibrare
+    int servoMin = 250;
+    int servoMax = 350;
+    int sign = -1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
-  if(joint==NERIGHT_BACK_ARMCK){
-    //
+  if(joint==RIGHT_BACK_ARM){
+     //TODO da calibrare
+    int servoMin = 250;
+    int servoMax = 350;
+    int sign = -1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_BACK_SHOULDER){
-    //
+     //TODO da calibrare
+    int servoMin = 250;
+    int servoMax = 350;
+    int sign = 1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_BACK_ARM){
-    //
+     //TODO da calibrare
+    int servoMin = 250;
+    int servoMax = 350;
+    int sign = 1;
+    pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
+
+  //debug
+  if(false) {
+    Serial.print("Move: Joint ");
+    Serial.print(joint);
+    Serial.print(" degree: ");
+    Serial.print(degree);
+    Serial.print(" pulse: ");
+    Serial.println(pulse);
+  }
+
+  //move servo
+  //int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
+  board.setPWM(joint, 0, pulse);
 }
 
 //mqtt message callback
@@ -189,16 +233,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println(payload_buff);
 
-  //relax servos lite
-  if(payload_buff == "relax") {
+  //relax servos
+ if(payload_buff.startsWith("relax")) {
     for(int i=0; i<10; i++){  
       moveJoint(i, 0);  
     }
     return;
   }
   
-  //test servos lite
-  if(payload_buff == "testservo") {
+  //test servos
+  if(payload_buff.startsWith("test")) {
     for(int i=0; i<10; i++){  
       moveJoint(i, 0);  
     }
@@ -217,33 +261,42 @@ void callback(char* topic, byte* payload, unsigned int length) {
   	return;
   }
   
-  //test servos full
-  if(payload_buff == "testservofull") {
-  	for(int i=0; i<10; i++){      
-  		for(int angle=-90; angle<=90; angle+=10){
-  			moveJoint(i, angle);
-  			delay(1000);
-  		}
-    }
-  	return;
-  }
-  
-  //test led
-  if(payload_buff == "testledOn") {
-    digitalWrite(BUILTIN_LED, LOW);
-	  return;
-  }
-  if(payload_buff == "testledOff") {
-    digitalWrite(BUILTIN_LED, HIGH);
+  //led
+  if(payload_buff.startsWith("led")) {
+    int onoff = getValue(payload_buff, ':', 1).toInt();
+    digitalWrite(BUILTIN_LED, (onoff ? HIGH : LOW));
 	  return;
   }
 
-  //move joint
-  int joint = getValue(payload_buff, ':', 0).toInt();
-  int degree = getValue(payload_buff, ':', 1).toInt();
-  moveJoint(joint, degree);
-  return;
+  //setup servo
+  //setup|joint:pulse|joint:pulse|.. (ex. setup|0:100|2:388)
+  if(payload_buff.startsWith("setup")) {
+    for(int i = 0; i <= 10; i++) {
+      String token = getValue(payload_buff, '|', i);
+      if(token!="setup" && token!="") {
+        int joint = getValue(token, ':', 0).toInt();
+        int pulse = getValue(token, ':', 1).toInt();
+        board.setPWM(joint, 0, pulse);
+      }
+    }
+    return;
+  }
   
+  //move servo
+  //move|joint:degree|joint:degree|.. (ex. move|0:30|2:-70)
+  if(payload_buff.startsWith("move")) {
+    for(int i = 0; i <= 10; i++) {
+      String token = getValue(payload_buff, '|', i);
+      if(token!="move" && token!="") {
+        int joint = getValue(token, ':', 0).toInt();
+        int degree = getValue(token, ':', 1).toInt();
+        moveJoint(joint, degree);
+      }
+    }
+    return;
+  }
+
+  /*
   //get json payload
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, payload_buff);
@@ -295,9 +348,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 	  int degree = root["LEFT_BACK_ARM"].as<int>();
 	  moveJoint(LEFT_BACK_ARM, degree);
   }
-  
+  */
+
+  /*
   //send feedback message
-  /*String output;
+  String output;
   serializeJson(doc, output);
   char output_char[output.length()];
   output.toCharArray(output_char, output.length());
