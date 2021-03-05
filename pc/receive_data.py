@@ -6,7 +6,7 @@ import numpy as np
 import paho.mqtt.client as mqtt
 
 MQTT_BROKER = "test.mosquitto.org"
-MQTT_RECEIVE = "myhome/mx/cserver"
+MQTT_RECEIVE = "bb7-2.0/servo-driver/out"
 
 def on_connect(client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))
@@ -22,7 +22,6 @@ client.connect(MQTT_BROKER, 1883)
 client.loop_start()
 
 while True:
-	cv.imshow("Stream", frame)
 	if cv.waitKey(1) & 0xFF == ord('q'):
 		break
 	

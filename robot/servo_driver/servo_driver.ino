@@ -3,7 +3,6 @@
 //Tools > Board Arduino Uno > Boards Manager > ESP32
 //Tools > Board Arduino Uno > ESP32 Arduino" > DOIT ESP32 DEVKIT V1
 //Tools > Manage Libraries > PubSubClient
-//Tools > Manage Libraries > ArduinoJson
 //Tools > Manage Libraries > Adafruit PWM Servo Driver Library by Adafruit
 //Tools > Port > <Selezionare porta seriale disponibile>
 
@@ -13,7 +12,6 @@
 //https://learn.adafruit.com/16-channel-pwm-servo-driver/using-the-adafruit-library
 //https://robojax.com/learn/arduino/?vid=robojax_PCA9685-V4
 //https://www.pubnub.com/blog/pubsub-nodemcu-32s-esp32-mqtt-pubnub-arduino-sdk/
-//https://arduinojson.org/v6/example/string/
 //https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
 
 #include <WiFi.h>
@@ -22,15 +20,9 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-#include <ArduinoJson.h>
-
 //servo range
 #define DEGREEMIN -90 //'minimum' degree
 #define DEGREEMAX 90  //'maximum' degree
-//#define SERVOMIN  150 // 'minimum' pulse length count (out of 4096)
-//#define SERVOMAX  600 // 'maximum' pulse length count (out of 4096)
-#define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 
 //body joint
 #define HEAD 				          0
@@ -102,8 +94,8 @@ boolean reconnect() {
 void moveJoint(int joint, int degree) {
 
   //degree limit
-  if(degree > 90) degree = 90;
-  if(degree < -90) degree = -90;
+  if(degree > DEGREEMAX) degree = DEGREEMAX;
+  if(degree < DEGREEMIN) degree = DEGREEMIN;
 
   int pulse = 0;
   
@@ -179,7 +171,7 @@ void moveJoint(int joint, int degree) {
   }
 
   //debug
-  if(false) {
+  if(true) {
     Serial.print("Move: Joint ");
     Serial.print(joint);
     Serial.print(" degree: ");
@@ -240,13 +232,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 
   //setup servo
-  //setup|joint:pulse|joint:pulse|.. (ex. setup|0:100|2:388)
+  //setup|joint:pulse|joint:pulse|.. (ex. setup:0=100:2=388)
   if(payload_buff.startsWith("setup")) {
     for(int i = 0; i <= 10; i++) {
-      String token = getValue(payload_buff, '|', i);
+      String token = getValue(payload_buff, ':', i);
       if(token!="setup" && token!="") {
-        int joint = getValue(token, ':', 0).toInt();
-        int pulse = getValue(token, ':', 1).toInt();
+        int joint = getValue(token, '=', 0).toInt();
+        int pulse = getValue(token, '=', 1).toInt();
         board.setPWM(joint, 0, pulse);
       }
     }
@@ -254,86 +246,20 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 
   //move servo
-  //move|joint:degree|joint:degree|.. (ex. move|0:30|2:-70)
+  //move|joint:degree|joint:degree|.. (ex. move:0=30:2=-70)
   if(payload_buff.startsWith("move")) {
     for(int i = 0; i <= 10; i++) {
-      String token = getValue(payload_buff, '|', i);
+      String token = getValue(payload_buff, ':', i);
       if(token!="move" && token!="") {
-        int joint = getValue(token, ':', 0).toInt();
-        int degree = getValue(token, ':', 1).toInt();
+        int joint = getValue(token, '=', 0).toInt();
+        int degree = getValue(token, '=', 1).toInt();
         moveJoint(joint, degree);
       }
     }
-    return;
   }
 
-  /*
-  //get json payload
-  DynamicJsonDocument doc(1024);
-  deserializeJson(doc, payload_buff);
-  JsonObject root = doc.to<JsonObject>();
-
-  String output;
-  serializeJson(root, output);
-  Serial.print("json: ");
-  Serial.println(output);
-  
-  //translate json to servo moves
-  if(root.containsKey("HEAD")) {
-	  int degree = root["HEAD"].as<int>();
-	  moveJoint(HEAD, degree);
-  }
-  if(root.containsKey("NECK")) {
-	  int degree = root["NECK"].as<int>();
-	  moveJoint(NECK, degree);
-  }
-  if(root.containsKey("RIGHT_FRONT_SHOULDER")) {
-	  int degree = root["RIGHT_FRONT_SHOULDER"].as<int>();
-	  moveJoint(RIGHT_FRONT_SHOULDER, degree);
-  }
-  if(root.containsKey("RIGHT_FRONT_ARM")) {
-	  int degree = root["RIGHT_FRONT_ARM"].as<int>();
-	  moveJoint(RIGHT_FRONT_ARM, degree);
-  }
-  if(root.containsKey("LEFT_FRONT_SHOULDER")) {
-	  int degree = root["LEFT_FRONT_SHOULDER"].as<int>();
-	  moveJoint(LEFT_FRONT_SHOULDER, degree);
-  }
-  if(root.containsKey("LEFT_FRONT_ARM")) {
-	int degree = root["LEFT_FRONT_ARM"].as<int>();
-	moveJoint(LEFT_FRONT_ARM, degree);
-  }
-  if(root.containsKey("RIGHT_BACK_SHOULDER")) {
-	  int degree = root["RIGHT_BACK_SHOULDER"].as<int>();
-	  moveJoint(RIGHT_BACK_SHOULDER, degree);
-  }
-  if(root.containsKey("RIGHT_BACK_ARM")) {
-	  int degree = root["RIGHT_BACK_ARM"].as<int>();
-	  moveJoint(RIGHT_BACK_ARM, degree);
-  }
-  if(root.containsKey("LEFT_BACK_SHOULDER")) {
-	  int degree = root["LEFT_BACK_SHOULDER"].as<int>();
-	  moveJoint(LEFT_BACK_SHOULDER, degree);
-  }
-  if(root.containsKey("LEFT_BACK_ARM")) {
-	  int degree = root["LEFT_BACK_ARM"].as<int>();
-	  moveJoint(LEFT_BACK_ARM, degree);
-  }
-  */
-
-  /*
   //send feedback message
-  String output;
-  serializeJson(doc, output);
-  char output_char[output.length()];
-  output.toCharArray(output_char, output.length());
-  Serial.println("Sending message to MQTT topic..");
-  Serial.println(output);
-  if (client.publish(topic_output, output_char) == true) {
-    Serial.println("Success sending message");
-  } else {
-    Serial.println("Error sending message");
-  }*/
+  client.publish(topic_output, payload_buff.c_str());
 }
 
 //get values from separated token string
