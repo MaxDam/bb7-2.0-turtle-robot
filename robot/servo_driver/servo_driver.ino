@@ -101,12 +101,6 @@ boolean reconnect() {
 //move body joint (servo motor)
 void moveJoint(int joint, int degree) {
 
-  /*int sign = 1;
-  if(joint==NECK || joint==LEFT_FRONT_ARM || joint==RIGHT_BACK_ARM || joint==RIGHT_FRONT_SHOULDER || joint==RIGHT_BACK_SHOULDER){
-    sign = -1;
-  }  
-  return degree*sign;*/
-
   //degree limit
   if(degree > 90) degree = 90;
   if(degree < -90) degree = -90;
@@ -114,94 +108,72 @@ void moveJoint(int joint, int degree) {
   int pulse = 0;
   
   if(joint==HEAD){
-    /*int sign = -1;
-    int center = -15;
-    int max_top = 55;
-    int max_bottom = -90;
-    if(degree >= 0) degree = degree / 90 * max_top * sign;
-    if(degree < 0)  degree = degree / -90 * max_bottom * sign;*/
-
-    int servoMin = 87;
-    int servoMax = 450;
+    //center=430
+    int servoMin = 270;
+    int servoMax = 590;
     int sign = -1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==NECK){
-    /*int sign = -1;
-    int center = -20;
-    int max_right = 50;
-    int max_left = -100;
-    if(degree >= 0) degree = degree / 90 * max_right * sign;
-    if(degree < 0)  degree = degree / -90 * max_left * sign;*/
-    
-    int servoMin = 100;
-    int servoMax = 475;
+    //center=420
+    int servoMin = 240;
+    int servoMax = 600;
     int sign = -1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_FRONT_SHOULDER){
-    /*int sign = -1;
-    int center = -20;
-    int max_right = -65;
-    int max_left = 20;
-    if(degree >= 0) degree = degree / 90 * max_right * sign;
-    if(degree < 0)  degree = degree / -90 * max_left * sign;*/
-     
-    int servoMin = 175;
-    int servoMax = 388;
+    //center=420
+    int servoMin = 320;
+    int servoMax = 520;
     int sign = -1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_FRONT_ARM){
-    /*int sign = 1;
-    int center = 42;
-    int max_extension = 100;
-    int max_crouch = -15;
-    if(degree >= 0) degree = degree / 90 * max_extension * sign;
-    if(degree < 0)  degree = degree / -90 * max_crouch * sign;*/
-      
-    int servoMin = 188;
-    int servoMax = 475;
+    //center=475
+    int servoMin = 350;
+    int servoMax = 600;
     int sign = 1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_FRONT_SHOULDER){
-    int servoMin = 200;
-    int servoMax = 388;
+    //center=460
+    int servoMin = 360;
+    int servoMax = 560;
     int sign = 1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_FRONT_ARM){
-    int servoMin = 100;
-    int servoMax = 370;
+    //center=390
+    int servoMin = 300;
+    int servoMax = 480;
     int sign = -1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_BACK_SHOULDER){
-    //TODO da calibrare
-    int servoMin = 250;
-    int servoMax = 350;
+    //center=420
+    int servoMin = 320;
+    int servoMax = 520;
     int sign = -1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==RIGHT_BACK_ARM){
-     //TODO da calibrare
-    int servoMin = 250;
-    int servoMax = 350;
+    //center=370
+    int servoMin = 260;
+    int servoMax = 480;
     int sign = -1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_BACK_SHOULDER){
-     //TODO da calibrare
-    int servoMin = 250;
-    int servoMax = 350;
+    //center=490
+    int servoMin = 390;
+    int servoMax = 590;
     int sign = 1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
   if(joint==LEFT_BACK_ARM){
-     //TODO da calibrare
-    int servoMin = 250;
-    int servoMax = 350;
+    //center=420
+    int servoMin = 340;
+    int servoMax = 500;
     int sign = 1;
     pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, servoMin, servoMax);
   }
@@ -217,7 +189,6 @@ void moveJoint(int joint, int degree) {
   }
 
   //move servo
-  //int pulse = map(degree*sign, DEGREEMIN, DEGREEMAX, SERVOMIN, SERVOMAX);
   board.setPWM(joint, 0, pulse);
 }
 
@@ -281,7 +252,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
     return;
   }
-  
+
   //move servo
   //move|joint:degree|joint:degree|.. (ex. move|0:30|2:-70)
   if(payload_buff.startsWith("move")) {
@@ -365,6 +336,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }*/
 }
 
+//get values from separated token string
 String getValue(String data, char separator, int index) {
   int found = 0;
   int strIndex[] = {0, -1};
