@@ -28,13 +28,10 @@ class BB7Motion:
 		#effettua leggeri movimenti random
 		for _ in range(50):
 			mov = random.choice([0, 15, -15])
-			bb7.armFrontRight(arm_zero_pos-mov)
-			.armFrontLeft(arm_zero_pos+mov)
-			.armBackRight(arm_zero_pos-mov)
-			.armBackLeft(arm_zero_pos+mov)
-			.head(random.choice([0, 3, -3, 0, 2, -2]))
-			.neck(random.choice([0, 4, -4, 0, 2, -2]))
-			.send()
+			bb7.armFrontRight(arm_zero_pos-mov).armFrontLeft(arm_zero_pos+mov)
+				.armBackRight(arm_zero_pos-mov).armBackLeft(arm_zero_pos+mov)
+				.head(random.choice([0, 3, -3, 0, 2, -2]))
+				.neck(random.choice([0, 4, -4, 0, 2, -2])).send()
 			time.sleep(1)
 		
 		time.sleep(4)
@@ -90,15 +87,10 @@ class BB7Motion:
 			bb7.armBackLeft(arm_zero_pos).armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.shoulderFrontRight(0)
-			.shoulderFrontLeft(-40)
-			.shoulderBackLeft(0)
-			.shoulderBackRight(-40)
-			.send()
+			bb7.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.shoulderFrontRight(0).shoulderFrontLeft(-40)
+				.shoulderBackLeft(0).shoulderBackRight(-40).send()
 			time.sleep(delay)
 
 			#porta il peso indietro a destra
@@ -111,9 +103,7 @@ class BB7Motion:
 			time.sleep(delay)
 			#reimposta l'assetto gambe
 			bb7.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.send()
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#porta il peso in avanti a sinistra
 			bb7.armFrontRight(arm_zero_pos-50).armFrontLeft(arm_zero_pos-70).send()
@@ -127,15 +117,10 @@ class BB7Motion:
 			bb7.armFrontRight(arm_zero_pos).armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.shoulderFrontRight(-40)
-			.shoulderFrontLeft(0)
-			.shoulderBackLeft(-40)
-			.shoulderBackRight(0)
-			.send()
+			bb7.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.shoulderFrontRight(-40).shoulderFrontLeft(0)
+				.shoulderBackLeft(-40).shoulderBackRight(0).send()
 			time.sleep(delay)
 
 	#step back
@@ -154,9 +139,7 @@ class BB7Motion:
 			time.sleep(delay)
 			#reimposta l'assetto gambe
 			bb7.armBackRight(arm_zero_pos)
-			.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.send()
+				.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#porta il peso indietro a destra
 			bb7.armBackRight(arm_zero_pos-90).armBackLeft(arm_zero_pos-20).send()
@@ -168,19 +151,13 @@ class BB7Motion:
 			time.sleep(delay)
 			#reimposta l'assetto gambe
 			bb7.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.send()
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.shoulderBackRight(0)
-			.shoulderBackLeft(40)
-			.shoulderFrontLeft(0)
-			.shoulderFrontRight(40).send()
+			bb7.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.shoulderBackRight(0).shoulderBackLeft(40)
+				.shoulderFrontLeft(0).shoulderFrontRight(40).send()
 			time.sleep(delay)
 
 			#porta il peso in avanti a destra
@@ -204,19 +181,13 @@ class BB7Motion:
 			time.sleep(delay)
 			#reimposta l'assetto gambe
 			bb7.armBackRight(arm_zero_pos)
-			.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.send()
+				.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.shoulderBackRight(40)
-			.shoulderBackLeft(0)
-			.shoulderFrontLeft(40)
-			.shoulderFrontRight(0).send()
+			bb7.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.shoulderBackRight(40).shoulderBackLeft(0)
+				.shoulderFrontLeft(40).shoulderFrontRight(0).send()
 			time.sleep(delay)
 
 	#step turn left
@@ -248,15 +219,10 @@ class BB7Motion:
 			bb7.armBackLeft(arm_zero_pos).armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.shoulderFrontRight(0)
-			.shoulderFrontLeft(40)
-			.shoulderBackLeft(0)
-			.shoulderBackRight(-40)
-			.send()
+			bb7.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.shoulderFrontRight(0).shoulderFrontLeft(40)
+				.shoulderBackLeft(0).shoulderBackRight(-40).send()
 			time.sleep(delay)
 
 			#porta il peso indietro a destra
@@ -282,15 +248,10 @@ class BB7Motion:
 			bb7.armFrontRight(arm_zero_pos).armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.shoulderFrontRight(-40)
-			.shoulderFrontLeft(0)
-			.shoulderBackLeft(40)
-			.shoulderBackRight(0)
-			.send()
+			bb7.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.shoulderFrontRight(-40).shoulderFrontLeft(0)
+				.shoulderBackLeft(40).shoulderBackRight(0).send()
 			time.sleep(delay)
 
 	#step turn right
@@ -322,15 +283,10 @@ class BB7Motion:
 			bb7.armBackLeft(arm_zero_pos).armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.shoulderFrontRight(0)
-			.shoulderFrontLeft(-40)
-			.shoulderBackLeft(0)
-			.shoulderBackRight(40)
-			.send()
+			bb7.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.shoulderFrontRight(0).shoulderFrontLeft(-40)
+				.shoulderBackLeft(0).shoulderBackRight(40).send()
 			time.sleep(delay)
 
 			#porta il peso indietro a destra
@@ -356,13 +312,8 @@ class BB7Motion:
 			bb7.armFrontRight(arm_zero_pos).armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos).send()
 			time.sleep(delay)
 			#effettua la spinta per il passo
-			bb7.armFrontRight(arm_zero_pos)
-			.armFrontLeft(arm_zero_pos)
-			.armBackRight(arm_zero_pos)
-			.armBackLeft(arm_zero_pos)
-			.shoulderFrontRight(40)
-			.shoulderFrontLeft(0)
-			.shoulderBackLeft(-40)
-			.shoulderBackRight(0)
-			.send()
+			bb7.armFrontRight(arm_zero_pos).armFrontLeft(arm_zero_pos)
+				.armBackRight(arm_zero_pos).armBackLeft(arm_zero_pos)
+				.shoulderFrontRight(40).shoulderFrontLeft(0)
+				.shoulderBackLeft(-40).shoulderBackRight(0).send()
 			time.sleep(delay)

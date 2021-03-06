@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 import cv2 as cv
 import sys
 import os
+from threading import Thread
 
 INPUT_RTSP 			= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
 MQTT_BROKER 		= "test.mosquitto.org"
@@ -24,7 +25,7 @@ LEFT_BACK_SHOULDER 	 = 8
 LEFT_BACK_ARM 		 = 9
 
 class BB7:
-	def __init__(self, acquire_video=True, video_callbak=None, distance_callback=None, gyro_callback=None, compass_callback=None):
+	def __init__(self, acquire_video=True, video_callback=None, video_delay=100, distance_callback=None, gyro_callback=None, compass_callback=None):
 
 		#init telemetry mqtt
 		
@@ -42,13 +43,19 @@ class BB7:
 		#init video streaming
 		
 		self.videoCapture = None
-		self.video_callbak = video_callbak
+		self.video_callback = video_callback
 		self.last_frame = None
+		self.video_delay = video_delay
 
 		if acquire_video:
 			os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;udp"
 			self.videoCapture = cv.VideoCapture(INPUT_RTSP, cv.CAP_FFMPEG)
 			self.videoCapture.set(cv.CAP_PROP_BUFFERSIZE, 2)
+
+			# Start frame retrieval thread
+        	self.video_thread = Thread(target=self._stream_run, args=())
+        	self.video_thread.daemon = True
+        	self.video_thread.start()
 
 		#init mqtt
 		
@@ -104,23 +111,19 @@ class BB7:
 				
 	#VIDEO STREAMING
 
-	def getFrame(self):
-		ret, frame = self.videoCapture.read()
-		if ret:
-			return frame
-		else:
-			return None
+	def _stream_run():
+		while True:
+            if self.videoCapture.isOpened():
+				_, frame = self.videoCapture.read()
+				frame = cv.resize(frame, (800, 420), cv.INTER_AREA)
+				self.last_frame = frame
 				
+				if self.video_callback:
+					self.video_callback(self.last_frame)
+            
+			time.sleep(self.video_delay)
+
 	def lastFrame(self):
-		#TODO da implementare prendendo l'ultimo frame da un thread che controlla perennemente le immagini in rtsp
-		'''
-		while true:
-			frame = bb7.getFrame()
-			frame = cv.resize(frame, (800, 420), cv.INTER_AREA)
-			cv.imshow("frame", frame)
-			if cv.waitKey(20) & 0xFF == ord("q"):
-				break
-		'''
 		return self.last_frame
 
 	#SERVO COMMANDS
