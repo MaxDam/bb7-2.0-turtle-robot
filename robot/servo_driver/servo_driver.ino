@@ -80,6 +80,22 @@ void setup_mqtt() {
 void setup_adafruit_board() {
   board.begin();
   board.setPWMFreq(60);
+
+  delay(500);
+  for(int i=0; i<10; i++) moveJoint(i, 0);
+  delay(500);
+  for(int i=3; i<10; i+=2) moveJoint(i, -90);
+  delay(500);
+  for(int i=3; i<10; i+=2) moveJoint(i, 90);
+  delay(500);
+  for(int i=3; i<10; i+=2) moveJoint(i, 0);
+  delay(500);
+  moveJoint(0, 20);
+  delay(500);
+  moveJoint(0, -20);
+  delay(500);
+   moveJoint(0, 0);
+  delay(500);
 }
 
 //reconnect to mqtt
@@ -209,17 +225,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
     for(int i=0; i<10; i++){  
       moveJoint(i, 0);  
     }
-  	for(int i=0; i<10; i++){  
-  		moveJoint(i, 0);  
-  		delay(1000);		
-  		moveJoint(i, -20);  
-  		delay(1000);	
-  		moveJoint(i, 0);  
-  		delay(1000);	
-  		moveJoint(i, +20);  
-  		delay(1000);	
-  	  moveJoint(i, 0);  
-      delay(1000);  
+  	for(int i=0; i<10; i++){
+  		moveJoint(i, 0);
+  		delay(1000);
+  		moveJoint(i, -20);
+  		delay(1000);
+  		moveJoint(i, 0);
+  		delay(1000);
+  		moveJoint(i, +20);
+  		delay(1000);
+  	  moveJoint(i, 0);
+      delay(1000);
     }
   	return;
   }
