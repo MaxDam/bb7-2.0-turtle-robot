@@ -187,7 +187,7 @@ void moveJoint(int joint, int degree) {
   }
 
   //debug
-  if(true) {
+  if(false) {
     Serial.print("Move: Joint ");
     Serial.print(joint);
     Serial.print(" degree: ");
@@ -275,7 +275,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 
   //send feedback message
-  client.publish(topic_output, payload_buff.c_str());
+  //client.publish(topic_output, payload_buff.c_str());
+
+  //send servo status feedback message 
+  String feedback = "feedback";
+  for(int i=0; i<10; i++) feedback += ":" + String(i) + "=" + String(board.getPWM(i));
+  Serial.print("servo status: ");
+  Serial.println(feedback);
+  client.publish(topic_output, feedback.c_str());
 }
 
 //get values from separated token string
