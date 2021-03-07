@@ -53,9 +53,9 @@ class BB7:
 			self.videoCapture.set(cv.CAP_PROP_BUFFERSIZE, 2)
 
 			# Start frame retrieval thread
-        	self.video_thread = Thread(target=self._stream_run, args=())
-        	self.video_thread.daemon = True
-        	self.video_thread.start()
+			self.video_thread = Thread(target=self._stream_run, args=())
+			self.video_thread.daemon = True
+			self.video_thread.start()
 
 		#init mqtt
 		
@@ -113,14 +113,14 @@ class BB7:
 
 	def _stream_run():
 		while True:
-            if self.videoCapture.isOpened():
+			if self.videoCapture.isOpened():
 				_, frame = self.videoCapture.read()
 				frame = cv.resize(frame, (800, 420), cv.INTER_AREA)
 				self.last_frame = frame
 				
 				if self.video_callback:
 					self.video_callback(self.last_frame)
-            
+			
 			time.sleep(self.video_delay)
 
 	def lastFrame(self):
