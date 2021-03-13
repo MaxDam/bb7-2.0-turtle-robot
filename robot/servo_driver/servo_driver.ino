@@ -292,18 +292,18 @@ void callback(char* topic, byte* payload, unsigned int length) {
   //move servo
   //move|joint:degree|joint:degree|.. (ex. move:S0=30:S2=-70:D=100:S0=10)
   if(payload_buff.startsWith("move")) {
-    int index = 0;
-
+    
     //loop tokens
-    while(token!="") {
-      String token = getValue(payload_buff, ':', index++);
-
+    int index = 1;
+    String token = "";
+    do {
       //get token (key=value)
-      if(token!="move" && token!="") {
-        String key = getValue(token, '=', 0);
+      token = getValue(payload_buff, ':', index++);
+      if(token!="") {
+        String key   = getValue(token, '=', 0);
         String value = getValue(token, '=', 1);
 
-        //servo
+        //servo command
         if(key.startsWith("S")) {
           key = key.replace("S", "");
           for(int retry = 0; retry <= 3; retry++) {
@@ -311,12 +311,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
           }
         } 
 
-        //delay
+        //delay command
         if(key.startsWith("D")) {
-          delay(value);
+          delay(value.toInt());
         }
       }
-    }
+    } while (token != "");
   }
 
   //send feedback message
