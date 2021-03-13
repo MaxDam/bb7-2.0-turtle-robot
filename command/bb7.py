@@ -146,48 +146,51 @@ class BB7:
 		self.clearCommand()
 
 	def head(self, degree):
-		self.servo_command += ':{}={}'.format(HEAD, degree)
+		self.servo_command += ':S{}={}'.format(HEAD, degree)
 		return self
 
 	def neck(self, degree):
-		self.servo_command += ':{}={}'.format(NECK, degree)
+		self.servo_command += ':S{}={}'.format(NECK, degree)
 		return self
 
 	def shoulderFrontRight(self, degree):
-		self.servo_command += ':{}={}'.format(RIGHT_FRONT_SHOULDER, degree)
+		self.servo_command += ':S{}={}'.format(RIGHT_FRONT_SHOULDER, degree)
 		return self
 	
 	def armFrontRight(self, degree):
-		self.servo_command += ':{}={}'.format(RIGHT_FRONT_ARM, degree)
+		self.servo_command += ':S{}={}'.format(RIGHT_FRONT_ARM, degree)
 		return self
 
 	def shoulderFrontLeft(self, degree):
-		self.servo_command += ':{}={}'.format(LEFT_FRONT_SHOULDER, degree)
+		self.servo_command += ':S{}={}'.format(LEFT_FRONT_SHOULDER, degree)
 		return self
 	
 	def armFrontLeft(self, degree):
-		self.servo_command += ':{}={}'.format(LEFT_FRONT_ARM, degree)
+		self.servo_command += ':S{}={}'.format(LEFT_FRONT_ARM, degree)
 		return self
 
 	def shoulderBackRight(self, degree):
-		self.servo_command += ':{}={}'.format(RIGHT_BACK_SHOULDER, degree)
+		self.servo_command += ':S{}={}'.format(RIGHT_BACK_SHOULDER, degree)
 		return self
 	
 	def armBackRight(self, degree):
-		self.servo_command += ':{}={}'.format(RIGHT_BACK_ARM, degree)
+		self.servo_command += ':S{}={}'.format(RIGHT_BACK_ARM, degree)
 		return self
 
 	def shoulderBackLeft(self, degree):
-		self.servo_command += ':{}={}'.format(LEFT_BACK_SHOULDER, degree)
+		self.servo_command += ':S{}={}'.format(LEFT_BACK_SHOULDER, degree)
 		return self
 	
 	def armBackLeft(self, degree):
-		self.servo_command += ':{}={}'.format(LEFT_BACK_ARM, degree)
+		self.servo_command += ':S{}={}'.format(LEFT_BACK_ARM, degree)
 		return self
-		
+
+	def delay(self, millis):
+		self.servo_command += ':D={}'.format(millis)
+		return self
+				
 	def arms(self, degree):
 		return self.armFrontRight(degree).armFrontLeft(degree).armBackRight(degree).armBackLeft(degree);
 
 	def zero(self, degree=0):
 		return self.head(0).neck(0).shoulderFrontRight(0).shoulderFrontLeft(0).shoulderBackRight(0).shoulderBackLeft(0).arms(degree);
-

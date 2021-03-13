@@ -272,6 +272,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
+  /*
   //move servo
   //move|joint:degree|joint:degree|.. (ex. move:0=30:2=-70)
   if(payload_buff.startsWith("move")) {
@@ -282,6 +283,37 @@ void callback(char* topic, byte* payload, unsigned int length) {
           int joint = getValue(token, '=', 0).toInt();
           int degree = getValue(token, '=', 1).toInt();
           moveJoint(joint, degree);
+        }
+      }
+    }
+  }
+  */
+
+  //move servo
+  //move|joint:degree|joint:degree|.. (ex. move:S0=30:S2=-70:D=100:S0=10)
+  if(payload_buff.startsWith("move")) {
+    int index = 0;
+
+    //loop tokens
+    while(token!="") {
+      String token = getValue(payload_buff, ':', index++);
+
+      //get token (key=value)
+      if(token!="move" && token!="") {
+        String key = getValue(token, '=', 0);
+        String value = getValue(token, '=', 1);
+
+        //servo
+        if(key.startsWith("S")) {
+          key = key.replace("S", "");
+          for(int retry = 0; retry <= 3; retry++) {
+            moveJoint(key.toInt(), value.toInt());
+          }
+        } 
+
+        //delay
+        if(key.startsWith("D")) {
+          delay(value);
         }
       }
     }
