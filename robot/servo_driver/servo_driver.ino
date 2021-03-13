@@ -50,9 +50,8 @@ WiFiClient MQTTclient;
 PubSubClient client(MQTTclient);
 long lastReconnectAttempt = 0;
 
-//adafruit servo motor driver vars
-//called this way, it uses the default address 0x40
-Adafruit_PWMServoDriver board = Adafruit_PWMServoDriver(0x40);
+// called this way, it uses the default address 0x40
+Adafruit_PWMServoDriver board = Adafruit_PWMServoDriver();
 
 //setup wifi
 void setup_wifi() {
@@ -78,28 +77,40 @@ void setup_mqtt() {
 
 //setup adafruit board
 void setup_adafruit_board() {
+  Serial.println("Setup adafruit board");
+  Wire.begin(SDA, SCL);
+  board = Adafruit_PWMServoDriver();
   board.begin();
   board.setPWMFreq(60);
-
+  board.setOscillatorFrequency(27000000);
+  
   delay(500);
+  for(int i=0; i<10; i++) moveJoint(i, 0);
   for(int i=0; i<10; i++) moveJoint(i, 0);
   delay(500);
   for(int i=3; i<10; i+=2) moveJoint(i, -90);
+  for(int i=3; i<10; i+=2) moveJoint(i, -90);
   delay(500);
+  for(int i=3; i<10; i+=2) moveJoint(i, 90);
   for(int i=3; i<10; i+=2) moveJoint(i, 90);
   delay(500);
   for(int i=3; i<10; i+=2) moveJoint(i, 0);
+  for(int i=3; i<10; i+=2) moveJoint(i, 0);
   delay(500);
+  moveJoint(0, 20);
   moveJoint(0, 20);
   delay(500);
   moveJoint(0, -20);
+  moveJoint(0, -20);
   delay(500);
-   moveJoint(0, 0);
+  moveJoint(0, 0);
+  moveJoint(0, 0);
   delay(500);
 }
 
 //reconnect to mqtt
 boolean reconnect() {
+  Serial.println("reconnecting mqtt...");
   if (client.connect(client_id)) {
     client.subscribe(topic_input); // Subscribe to channel.
   }
@@ -264,12 +275,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
   //move servo
   //move|joint:degree|joint:degree|.. (ex. move:0=30:2=-70)
   if(payload_buff.startsWith("move")) {
-    for(int i = 0; i <= 10; i++) {
-      String token = getValue(payload_buff, ':', i);
-      if(token!="move" && token!="") {
-        int joint = getValue(token, '=', 0).toInt();
-        int degree = getValue(token, '=', 1).toInt();
-        moveJoint(joint, degree);
+    for(int count = 0; count <= 3; count++) {
+      for(int i = 0; i <= 10; i++) {
+        String token = getValue(payload_buff, ':', i);
+        if(token!="move" && token!="") {
+          int joint = getValue(token, '=', 0).toInt();
+          int degree = getValue(token, '=', 1).toInt();
+          moveJoint(joint, degree);
+        }
       }
     }
   }
@@ -313,10 +326,12 @@ void setup() {
 void loop() {
   //loop for mqtt
   if (!client.connected()) {
+    Serial.println("mqtt connection error.. retry");
     long now = millis();
     if (now - lastReconnectAttempt > 5000) { // Try to reconnect.
       lastReconnectAttempt = now;
       if (reconnect()) { // Attempt to reconnect.
+        Serial.println("mqtt connected!");
         lastReconnectAttempt = 0;
       }
     }

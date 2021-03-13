@@ -9,6 +9,7 @@ from threading import Thread
 INPUT_RTSP 			= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
 MQTT_BROKER 		= "test.mosquitto.org"
 MQTT_TOPIC_SERVO 	= "bb7-2.0/servo-driver/in"
+MQTT_TOPIC_SERVO_FB = "bb7-2.0/servo-driver/out"
 MQTT_TOPIC_DISTANCE = "bb7-2.0/ultrasound_sensor-driver/out"
 MQTT_TOPIC_GYRO 	= "bb7-2.0/gyro-driver/out"
 MQTT_TOPIC_COMPASS	= "bb7-2.0/compass-driver/out"
@@ -39,6 +40,8 @@ class BB7:
 		self.last_compass = None
 		
 		self.servo_command = ''
+		
+		self.connected = False
 		
 		#init video streaming
 		
@@ -79,13 +82,15 @@ class BB7:
 			self.mqtt_client.subscribe(MQTT_TOPIC_DISTANCE)
 			self.mqtt_client.subscribe(MQTT_TOPIC_GYRO)
 			self.mqtt_client.subscribe(MQTT_TOPIC_COMPASS)
+			self.mqtt_client.subscribe(MQTT_TOPIC_SERVO)
+			self.connected = True
 		else:
 			print("Connection failed")
 		
 	def _on_message(self, client, userdata, msg):
 		print("Message received-> " + msg.topic + " " + str(msg.payload))
 
-		if msg.topic == MQTT_TOPIC_DINSTANCE:
+		if msg.topic == MQTT_TOPIC_DISTANCE:
 			self.last_distance = str(message.payload)
 			if self.distance_callback:
 				self.distance_callback(self.last_distance)
@@ -111,7 +116,7 @@ class BB7:
 				
 	#VIDEO STREAMING
 
-	def _stream_run():
+	def _stream_run(self):
 		while True:
 			if self.videoCapture.isOpened():
 				_, frame = self.videoCapture.read()
@@ -131,11 +136,12 @@ class BB7:
 	def clearCommand(self):
 		self.servo_command = ''
 		
-	def relax():
+	def relax(self):
 		self.mqtt_client.publish(MQTT_TOPIC_SERVO, "relax")
 
 	def send(self):
-		self.servo_command = 'move:'.format(self.servo_command)
+		self.servo_command = 'move{}'.format(self.servo_command)
+		print("send to " + MQTT_TOPIC_SERVO + ": " + self.servo_command)
 		self.mqtt_client.publish(MQTT_TOPIC_SERVO, self.servo_command)
 		self.clearCommand()
 
@@ -182,6 +188,6 @@ class BB7:
 	def arms(self, degree):
 		return self.armFrontRight(degree).armFrontLeft(degree).armBackRight(degree).armBackLeft(degree);
 
-	def zero(degree=0):
+	def zero(self, degree=0):
 		return self.head(0).neck(0).shoulderFrontRight(0).shoulderFrontLeft(0).shoulderBackRight(0).shoulderBackLeft(0).arms(degree);
 
