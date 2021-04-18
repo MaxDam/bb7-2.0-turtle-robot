@@ -1,3 +1,5 @@
+#source activate py36
+
 from bb7 import BB7
 from bb7_motion import BB7Motion
 import cv2 as cv
@@ -52,7 +54,7 @@ bb7.zero(arm_zero_pos).send()
 #conta i passi in avanti
 for i in range(2):
 	#porta il peso indietro a sinistra
-	bb7.armBackRight(arm_zero_pos-80).armBackLeft(arm_zero_pos-80-weight_side_diff) \
+	bb7.armBackRight(arm_zero_pos-80).armBackLeft(arm_zero_pos-80-weight_side_diff)
 	.delay(delay) \
 	#muove a gamba anteriore destra per il passo
 	.armFrontRight(-60) \
