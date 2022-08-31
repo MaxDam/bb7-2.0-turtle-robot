@@ -14,6 +14,18 @@
 //https://www.pubnub.com/blog/pubsub-nodemcu-32s-esp32-mqtt-pubnub-arduino-sdk/
 //https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
 
+/****************************************************************************************************************************************************
+ * SETUP ENVIROMENT FOR "ESP-WROOM-32 38 PIN Develeopment" chip:
+ * link: https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
+ *
+ * 1) Additional Board Manager URLs: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+ * OR: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json, http://arduino.esp8266.com/stable/package_esp8266com_index.json
+ * 2) Tools > Board > Boards Manager -> install "ESP32 by Espressif Systems"
+ * 3) TOOLS->Board->ESP32 Arduino->DOIT ESP32 DEVKIT V1
+ * 4) Tools > Port and select the COM port 
+ ****************************************************************************************************************************************************/
+
+
 #include <WiFi.h>
 #include <PubSubClient.h>
 
@@ -39,7 +51,7 @@
 //wifi and mqtt configuration
 const char* ssid     = "Vodafone-C01960075";
 const char* password = "tgYsZkgHA4xhJLGy";
-const char* mqtt_server = "test.mosquitto.org";
+const char* mqtt_server = "192.168.1.8";
 const int mqtt_port = 1883;
 const char* topic_input = "bb7-2.0/servo-driver/in";
 const char* topic_output = "bb7-2.0/servo-driver/out";

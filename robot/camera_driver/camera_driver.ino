@@ -1,10 +1,3 @@
-//IDE ESP32
-//https://randomnerdtutorials.com/program-upload-code-esp32-cam/
-//File > Preferences > Additional Board Manager URLs > https://dl.espressif.com/dl/package_esp32_index.json
-//Board > Boards Manager > ESP32
-//Tools > Board > Board: "AI-Thinker ESP32-CAM" > ESP32 Arduino > AI-Thinker ESP32-CAM
-//Tools > Port > Selezionare porta com
-
 /****************************************************************************************************************************************************
  *  TITLE: HOW TO BUILD A $9 RSTP VIDEO STREAMER: Using The ESP-32 CAM Board || Arduino IDE - DIY #14
  *  DESCRIPTION: This sketch creates a video streamer than uses RTSP. You can configure it to either connect to an existing WiFi network or to create
@@ -15,6 +8,17 @@
  *  BnBe Post: https://www.bitsnblobs.com/rtsp-video-streamer---esp32
  ****************************************************************************************************************************************************/
 
+/****************************************************************************************************************************************************
+ * SETUP ENVIROMENT:
+ * link: https://randomnerdtutorials.com/program-upload-code-esp32-cam/, https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
+ *
+ * 1) Additional Board Manager URLs: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+ * OR: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json, http://arduino.esp8266.com/stable/package_esp8266com_index.json
+ * 2) Tools > Board > Boards Manager -> install "ESP32 by Espressif Systems"
+ * 3) Tools > Board -> AI-Thinker ESP32-CAM
+ * 4) Tools > Port and select the COM port 
+ ****************************************************************************************************************************************************/
+ 
   /********************************************************************************************************************
  *  Board Settings:
  *  Board: "ESP32 Wrover Module"
@@ -25,10 +29,7 @@
  *  Core Debug Level: "None"
  *  COM Port: Depends *On Your System*
  *********************************************************************************************************************/
-
- //https://github.com/bnbe-club/rtsp-video-streamer-diy-14
-//https://www.instructables.com/9-RTSP-Video-Streamer-Using-the-ESP32-CAM-Board/
-
+ 
 #include "src/OV2640.h"
 #include <WiFi.h>
 #include <WebServer.h>

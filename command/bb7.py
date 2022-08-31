@@ -6,7 +6,9 @@ import sys
 import os
 from threading import Thread
 
-INPUT_RTSP 			= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
+#INPUT_RTSP 		= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
+#MQTT_BROKER 		= "192.168.1.8"
+INPUT_RTSP 			= "rtsp://192.168.1.6";
 MQTT_BROKER 		= "test.mosquitto.org"
 MQTT_TOPIC_SERVO 	= "bb7-2.0/servo-driver/in"
 MQTT_TOPIC_SERVO_FB = "bb7-2.0/servo-driver/out"
