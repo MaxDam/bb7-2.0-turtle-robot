@@ -34,19 +34,19 @@
 
 //servo range
 #define DEGREEMIN -90 //'minimum' degree
-#define DEGREEMAX 90  //'maximum' degree
+#define DEGREEMAX  90 //'maximum' degree
 
 //body joint
-#define HEAD 				          0
-#define NECK 				          1
+#define HEAD 				  0
+#define NECK 				  1
 #define RIGHT_FRONT_SHOULDER  2
-#define RIGHT_FRONT_ARM		    3
+#define RIGHT_FRONT_ARM		  3
 #define LEFT_FRONT_SHOULDER	  4
 #define LEFT_FRONT_ARM	      5
 #define RIGHT_BACK_SHOULDER	  6
-#define RIGHT_BACK_ARM 		    7
+#define RIGHT_BACK_ARM 		  7
 #define LEFT_BACK_SHOULDER 	  8
-#define LEFT_BACK_ARM	        9
+#define LEFT_BACK_ARM	      9
 
 //wifi and mqtt configuration
 const char* ssid     = "Vodafone-C01960075";
@@ -83,7 +83,7 @@ void setup_wifi() {
 //setup mqtt
 void setup_mqtt() {
   client.setServer(mqtt_server, mqtt_port);
-  client.setCallback(callback);
+  client.setCallback(receive_command);
   lastReconnectAttempt = 0;
 }
 
@@ -223,9 +223,9 @@ void moveJoint(int joint, int degree) {
   board.setPWM(joint, 0, pulse);
 }
 
-//mqtt message callback
-void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
+//mqtt message callback (servo-driver receive command)
+void receive_command(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Received command [");
   Serial.print(topic);
   Serial.print("] ");
   
