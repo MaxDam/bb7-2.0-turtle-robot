@@ -37,22 +37,22 @@
 #define DEGREEMAX  90 //'maximum' degree
 
 //body joint
-#define HEAD 				  0
-#define NECK 				  1
+#define HEAD                  0
+#define NECK                  1
 #define RIGHT_FRONT_SHOULDER  2
-#define RIGHT_FRONT_ARM		  3
-#define LEFT_FRONT_SHOULDER	  4
-#define LEFT_FRONT_ARM	      5
-#define RIGHT_BACK_SHOULDER	  6
-#define RIGHT_BACK_ARM 		  7
-#define LEFT_BACK_SHOULDER 	  8
-#define LEFT_BACK_ARM	      9
+#define RIGHT_FRONT_ARM       3
+#define LEFT_FRONT_SHOULDER   4
+#define LEFT_FRONT_ARM        5
+#define RIGHT_BACK_SHOULDER   6
+#define RIGHT_BACK_ARM        7
+#define LEFT_BACK_SHOULDER    8
+#define LEFT_BACK_ARM         9
 
 //wifi and mqtt configuration
 const char* ssid     = "Vodafone-C01960075";
 const char* password = "tgYsZkgHA4xhJLGy";
 const char* mqtt_server = "192.168.1.8";
-const int mqtt_port = 1883;
+const int mqtt_port = 9001;
 const char* topic_input = "bb7-2.0/servo-driver/in";
 const char* topic_output = "bb7-2.0/servo-driver/out";
 const char* client_id = "bb7-2.0/servo-driver/123456";
@@ -90,8 +90,9 @@ void setup_mqtt() {
 //setup adafruit board
 void setup_adafruit_board() {
   Serial.println("Setup adafruit board");
-  Wire.begin(SDA, SCL);
-  board = Adafruit_PWMServoDriver();
+  //Wire.begin(SDA, SCL);
+  //board = Adafruit_PWMServoDriver();
+  board = Adafruit_PWMServoDriver(0x40);
   board.begin();
   board.setPWMFreq(60);
   board.setOscillatorFrequency(27000000);
@@ -317,7 +318,7 @@ void receive_command(char* topic, byte* payload, unsigned int length) {
 
         //servo command
         if(key.startsWith("S")) {
-          key = key.replace("S", "");
+          key.replace("S", "");
           for(int retry = 0; retry <= 3; retry++) {
             moveJoint(key.toInt(), value.toInt());
           }

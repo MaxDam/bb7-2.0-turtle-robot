@@ -7,9 +7,10 @@ import os
 from threading import Thread
 
 #INPUT_RTSP 		= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
-#MQTT_BROKER 		= "192.168.1.8"
+#MQTT_BROKER 		= "test.mosquitto.org"
 INPUT_RTSP 			= "rtsp://192.168.1.6";
-MQTT_BROKER 		= "test.mosquitto.org"
+MQTT_BROKER 		= "192.168.1.8"
+MQTT_PORT			= 9001
 MQTT_TOPIC_SERVO 	= "bb7-2.0/servo-driver/in"
 MQTT_TOPIC_SERVO_FB = "bb7-2.0/servo-driver/out"
 MQTT_TOPIC_DISTANCE = "bb7-2.0/ultrasound_sensor-driver/out"
@@ -67,7 +68,7 @@ class BB7:
 		self.mqtt_client = mqtt.Client()
 		self.mqtt_client.on_connect = self._on_connect
 		self.mqtt_client.on_message = self._on_message
-		self.mqtt_client.connect(MQTT_BROKER, 1883)
+		self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
 		self.mqtt_client.loop_start()
 
 	def destroy(self):
