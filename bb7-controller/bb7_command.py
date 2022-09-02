@@ -5,6 +5,9 @@ from bb7_motion import BB7Motion
 import cv2 as cv
 import time
 
+INPUT_RTSP	= "rtsp://192.168.1.6:8554/mjpeg/1";
+MQTT_BROKER	= "192.168.1.8"
+
 faceDetector = cv.dnn.readNetFromCaffe("model/weights-prototxt.txt", "model/res_ssd_300Dim.caffeModel" )
 
 def detect_face(frame):
@@ -28,12 +31,22 @@ def acquire_frame(frm):
 	#frm = detect_face(frm)
 	cv.imshow("current frame", frm)
 
-bb7 = BB7(acquire_video=False, video_callback=acquire_frame)
+bb7  = BB7(acquire_video=True, video_callback=acquire_frame)
 bb7M = BB7Motion(bb7)
 while not bb7.connected:
 	time.sleep(1)
 
 bb7M.standup()
+time.sleep(0.5)
+
+bb7M.stepForward()
+
+time.sleep(0.5)
+bb7M.stepTurnLeft()
+
+#frame = bb7.lastFrame()
+#frame = detect_face(frame)
+#cv.imshow("last frame", frame)
 	
 #bb7.head(40).neck(20).armFrontRight(30).send()
 #time.sleep(0.5)
@@ -43,8 +56,3 @@ bb7M.standup()
 
 #bb7M.stepForward(4, delay=0.1)
 #time.sleep(0.5)
-
-#frame = bb7.lastFrame()
-#frame = detect_face(frame)
-#cv.imshow("last frame", frame)
-

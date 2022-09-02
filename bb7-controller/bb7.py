@@ -8,7 +8,7 @@ from threading import Thread
 
 #INPUT_RTSP 		= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
 #MQTT_BROKER 		= "test.mosquitto.org"
-INPUT_RTSP 			= "rtsp://192.168.1.6";
+INPUT_RTSP 			= "rtsp://192.168.1.6:8554/mjpeg/1";
 MQTT_BROKER 		= "192.168.1.8"
 MQTT_PORT			= 9001
 MQTT_TOPIC_SERVO 	= "bb7-2.0/servo-driver/in"
@@ -77,7 +77,7 @@ class BB7:
 			self.videoCapture.release()
 			cv.destroyAllWindows()
 
-	#telemetry mqtt
+	#TELEMETRY MQTT
 		
 	def _on_connect(self, client, userdata, flags, rc):
 		if rc == 0:
@@ -138,15 +138,18 @@ class BB7:
 
 	def clearCommand(self):
 		self.servo_command = ''
+		return self
 		
 	def relax(self):
 		self.mqtt_client.publish(MQTT_TOPIC_SERVO, "relax")
+		return self
 
 	def send(self):
 		self.servo_command = 'move{}'.format(self.servo_command)
 		print("send to " + MQTT_TOPIC_SERVO + ": " + self.servo_command)
 		self.mqtt_client.publish(MQTT_TOPIC_SERVO, self.servo_command)
 		self.clearCommand()
+		return self
 
 	def head(self, degree):
 		self.servo_command += ':S{}={}'.format(HEAD, degree)
