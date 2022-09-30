@@ -14,3 +14,5 @@ code:
   p = Process(target=videoCallback, args=(frame,))
   p.start()
   p.join()
+
+3) non funziona il forward, da capire perchè
