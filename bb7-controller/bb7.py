@@ -5,11 +5,12 @@ import cv2 as cv
 import sys
 import os
 from threading import Thread
+import time
 
 #INPUT_RTSP 		= "rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream";
 #MQTT_BROKER 		= "test.mosquitto.org"
-INPUT_RTSP 			= "rtsp://192.168.1.6:8554/mjpeg/1";
-MQTT_BROKER 		= "192.168.1.8"
+INPUT_RTSP 			= "rtsp://192.168.1.7:8554/mjpeg/1";
+MQTT_BROKER 		= "192.168.1.6"
 MQTT_PORT			= 9001
 MQTT_TOPIC_SERVO 	= "bb7-2.0/servo-driver/in"
 MQTT_TOPIC_SERVO_FB = "bb7-2.0/servo-driver/out"
@@ -124,6 +125,7 @@ class BB7:
 			if self.videoCapture.isOpened():
 				_, frame = self.videoCapture.read()
 				frame = cv.resize(frame, (800, 420), cv.INTER_AREA)
+				cv.imshow("frame", frame)
 				self.last_frame = frame
 				
 				if self.video_callback:

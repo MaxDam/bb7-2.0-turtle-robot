@@ -1,0 +1,16 @@
+1) la telecamera dovrebbe collegarsi ad mqtt per dire al server che esiste
+nota: prevedere un sistema di messaggi che risponde alla richiesta del client
+
+2) lo stream contemporaneo non funziona perchè python non gestisce bene il multithreading per colpa del GIL
+nota: bisogna usare il multi process al posto del multithreading
+
+links: 
+  https://docs.python.org/3/library/multiprocessing.html
+  https://www.digitalocean.com/community/tutorials/python-multiprocessing-example
+code:
+  from multiprocessing import Process
+  def videoCallback(frame):
+    #frame handle
+  p = Process(target=videoCallback, args=(frame,))
+  p.start()
+  p.join()

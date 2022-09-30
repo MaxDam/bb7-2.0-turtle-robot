@@ -51,7 +51,7 @@
 //wifi and mqtt configuration
 const char* ssid     = "Vodafone-C01960075";
 const char* password = "tgYsZkgHA4xhJLGy";
-const char* mqtt_server = "192.168.1.8";
+const char* mqtt_server = "192.168.1.6";
 const int mqtt_port = 9001;
 const char* topic_input = "bb7-2.0/servo-driver/in";
 const char* topic_output = "bb7-2.0/servo-driver/out";
